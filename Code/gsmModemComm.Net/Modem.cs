@@ -34,50 +34,63 @@ namespace gsmModemComm.Net
         /// <returns>List of SMS, null if no message available on SIM</returns>
         public List<SMS> ReadAllMessages()
         {
-            SerialPort port = OpenPort();
-            if (port != null)
+            SerialPort port = null;
+            try
             {
-                int count = CountSMSmessages(port);
-                if (count > 0)
+                port = OpenPort();
+                if (port != null)
                 {
+                    int count = CountSMSmessages(port);
+                    if (count > 0)
+                    {
 
-                    #region Command
-                    string strCommand = "AT+CMGL=\"ALL\"";
+                        #region Command
+                        string strCommand = "AT+CMGL=\"ALL\"";
 
-                    //if (this.rbReadAll.Checked)
-                    //{
-                    //    strCommand = "AT+CMGL=\"ALL\"";
-                    //}
-                    //else if (this.rbReadUnRead.Checked)
-                    //{
-                    //    strCommand = "AT+CMGL=\"REC UNREAD\"";
-                    //}
-                    //else if (this.rbReadStoreSent.Checked)
-                    //{
-                    //    strCommand = "AT+CMGL=\"STO SENT\"";
-                    //}
-                    //else if (this.rbReadStoreUnSent.Checked)
-                    //{
-                    //    strCommand = "AT+CMGL=\"STO UNSENT\"";
-                    //}
-                    #endregion
+                        //if (this.rbReadAll.Checked)
+                        //{
+                        //    strCommand = "AT+CMGL=\"ALL\"";
+                        //}
+                        //else if (this.rbReadUnRead.Checked)
+                        //{
+                        //    strCommand = "AT+CMGL=\"REC UNREAD\"";
+                        //}
+                        //else if (this.rbReadStoreSent.Checked)
+                        //{
+                        //    strCommand = "AT+CMGL=\"STO SENT\"";
+                        //}
+                        //else if (this.rbReadStoreUnSent.Checked)
+                        //{
+                        //    strCommand = "AT+CMGL=\"STO UNSENT\"";
+                        //}
+                        #endregion
 
-                    // If SMS exist then read SMS
-                    #region Read SMS
-                    //.............................................. Read all SMS ....................................................
-                    List<SMS> messages = ReadSMS(port, strCommand);
-                    
-                    #endregion
-                    ClosePort(port);
-                    return messages;
+                        // If SMS exist then read SMS
+                        #region Read SMS
+                        //.............................................. Read all SMS ....................................................
+                        List<SMS> messages = ReadSMS(port, strCommand);
+
+                        #endregion
+                        ClosePort(port);
+                        return messages;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
-                {
-                    return null;
-                }
+                    throw new Exception("Failed to open port");
             }
-            else
-                throw new Exception("Failed to open port");
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (port != null && port.IsOpen)
+                    ClosePort(port);
+            }
         }
 
         /// <summary>
@@ -400,10 +413,11 @@ namespace gsmModemComm.Net
         private bool DeleteMsg(string p_strCommand)
         {
             bool isDeleted = false;
+            SerialPort port = null;
             try
             {
                 //Open port
-                SerialPort port = OpenPort();
+                port = OpenPort();
                 if (port != null)
                 {
 
@@ -430,6 +444,11 @@ namespace gsmModemComm.Net
             catch (Exception ex)
             {
                 throw ex;
+            }
+            finally
+            {
+                if (port != null && port.IsOpen)
+                    ClosePort(port);
             }
         }
     }
