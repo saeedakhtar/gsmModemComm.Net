@@ -26,7 +26,7 @@ namespace gsmModemComm.Net
         }
         public string Status
         {
-            get { return GetString(status); }
+            get { return status; }
             set { status = value; }
         }
         public string Sender
@@ -41,7 +41,7 @@ namespace gsmModemComm.Net
         }
         public string Sent
         {
-            get { return GetString(sent); }
+            get { return sent; }
             set { sent = value; }
         }
         public string Message
